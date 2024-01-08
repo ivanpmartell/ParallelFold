@@ -22,33 +22,15 @@ We have these following modifications to the original AlphaFold pipeline:
 
 ## How to install 
 
-We recommend to install AlphaFold locally, and not using **docker**.
+We recommend to install AlphaFold locally, and not using **docker**. An install script for ubuntu 20.04 is provided. Make sure to add ENV PATHs to your bashrc.
 
 ```bash
 # clone this repo
-git clone https://github.com/Zuricho/ParallelFold.git
+git clone https://github.com/ivanpmartell/ParallelFold.git
 
-# Create a miniconda environment for ParaFold/AlphaFold
-# Recommend you to use python 3.8, version < 3.7 have missing packages, python versions newer than 3.8 were not tested
-conda create -n parafold python=3.8
+# run install script as super user
 
-pip install py3dmol
-# openmm 7.7 is recommended (original alphafold using 7.5.1, but it is not supported now)
-conda install -c conda-forge openmm=7.7 pdbfixer
-
-# use pip3 to install most of packages
-pip3 install -r requirements.txt
-
-# install cuda and cudnn
-# cudatoolkit 11.3.1 matches cudnn 8.2.1
-conda install cudatoolkit=11.3 cudnn
-
-# downgrade jaxlib to the correct version, matches with cuda and cudnn version
-pip3 install --upgrade --no-cache-dir jax==0.3.25 jaxlib==0.3.25+cuda11.cudnn82 -f https://storage.googleapis.com/jax-releases/jax_cuda_releases.html
-
-# install packages for multiple sequence alignment
-conda install -c bioconda hmmer=3.3.2 hhsuite=3.3.0 kalign2=2.04
-
+# make script executable
 chmod +x run_alphafold.sh
 ```
 

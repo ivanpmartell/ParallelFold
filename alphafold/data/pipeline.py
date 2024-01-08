@@ -241,11 +241,11 @@ class DataPipeline:
 
         process_results = list()
         process_pool = multiprocessing.Pool(processes=multiprocessing.cpu_count())
-        process_results.append(('uniref90', pool.apply_async(self.process_uniref90, (input_fasta_path, msa_output_dir,))))
-        process_results.append(('mgnify', pool.apply_async(self.process_mgnify, (input_fasta_path, msa_output_dir,))))
-        process_results.append(('bfd', pool.apply_async(self.process_bfd, (input_fasta_path, msa_output_dir,))))
-        pool.close()
-        pool.join()
+        process_results.append(('uniref90', process_pool.apply_async(self.process_uniref90, (input_fasta_path, msa_output_dir,))))
+        process_results.append(('mgnify', process_pool.apply_async(self.process_mgnify, (input_fasta_path, msa_output_dir,))))
+        process_results.append(('bfd', process_pool.apply_async(self.process_bfd, (input_fasta_path, msa_output_dir,))))
+        process_pool.close()
+        process_pool.join()
         for process_result in process_results:
             result_tag = process_result[0]
             if result_tag == 'uniref90':

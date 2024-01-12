@@ -179,7 +179,7 @@ if [[ "$use_gpu" == true ]] ; then
     fi
 fi
 
-if [[ "$run_feature" == false]] ; then
+if [[ "$run_feature" == false ]] ; then
     export TF_FORCE_UNIFIED_MEMORY='1'
     export XLA_PYTHON_CLIENT_MEM_FRACTION='4.0'
 fi

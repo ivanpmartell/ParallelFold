@@ -175,7 +175,7 @@ class DataPipeline:
         
         if self.use_precomputed_msas and os.path.exists(pdb_hits_out_path):
             with open(pdb_hits_out_path) as f:
-            pdb_templates_result = f.read()
+                pdb_templates_result = f.read()
         else:
             if self.template_searcher.input_format == 'sto':
                 pdb_templates_result = self.template_searcher.query(
@@ -258,10 +258,10 @@ class DataPipeline:
                 pdb_templates_result = uniref90_result[1]
             elif result_tag == 'mgnify':
                 mgnify_result = process_result[1].get()
-                mgnify_msa = mgnify_result[0]
+                mgnify_msa = mgnify_result
             elif result_tag == 'bfd':
                 bfd_result = process_result[1].get()
-                bfd_msa = bfd_result[0]
+                bfd_msa = bfd_result
 
 
         pdb_template_hits = self.template_searcher.get_template_hits(

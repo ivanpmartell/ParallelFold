@@ -21,11 +21,12 @@ usage() {
         echo "-r <models_to_relax>    'all': all models are relaxed, 'best': only the most confident model, 'none': no models are relaxed (default: 'all')"
         echo "-m <model_selection>    Names of comma separated model names to use in prediction (default: All 5 models)"
         echo "-R <recycling>          Set cycles for recycling (default: '3')"
-        echo "-f <run_feature>        Only run MSA and template search to generate feature file (default: 'False')"
+        echo "-f <run_features_only>  Only run MSA and template search to generate feature file (default: 'False')"
         echo "-G <use_gpu_relax>      Use GPU relax (default: 'False')"
         echo "-e <random_seed>        Set random seed (default: '-1')"
         echo "-s <skip_msa>           Skip MSA and template step, generate single sequence feature for ultimately fast prediction (default: 'False')"
         echo "-P <use_precomputed_msas>   Use precomputed MSAs .sto files (default: 'False')"
+        
         echo "Future Parameters (You cannot use them now):"
         echo "-q <quick_mode>         Quick mode. Use small BFD database, no templates"
         echo ""
@@ -80,7 +81,7 @@ while getopts ":d:o:p:i:t:u:c:m:R:r:e:bgvsqfGP" i; do
                 recycling=$OPTARG
         ;;
         f)
-                run_feature=true
+                run_features_only=true
         ;;
         G)
                 use_gpu_relax=true
@@ -143,8 +144,8 @@ if [[ "$recycling" == "" ]] ; then
     recycling=3
 fi
 
-if [[ "$run_feature" == "" ]] ; then
-    run_feature=false
+if [[ "$run_features_only" == "" ]] ; then
+    run_features_only=false
 fi
 
 if [[ "$use_precomputed_msas" == "" ]] ; then
@@ -179,7 +180,7 @@ if [[ "$use_gpu" == true ]] ; then
     fi
 fi
 
-if [[ "$run_feature" == false ]] ; then
+if [[ "$run_features_only" == false ]] ; then
     export TF_FORCE_UNIFIED_MEMORY='1'
     export XLA_PYTHON_CLIENT_MEM_FRACTION='4.0'
 fi
@@ -261,7 +262,7 @@ python $alphafold_script \
 --models_to_relax=$models_to_relax \
 --use_gpu_relax=$use_gpu_relax \
 --recycling=$recycling \
---run_feature=$run_feature \
+--run_feature=$run_features_only \
 --random_seed=$random_seed \
 --use_precomputed_msas=$use_precomputed_msas \
 --logtostderr

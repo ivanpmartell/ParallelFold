@@ -15,25 +15,24 @@ usage() {
         echo "Optional Parameters:"
         echo "-t <max_template_date>  Maximum template release date to consider (YYYY-MM-DD format). (default: 2020-12-01)"
         echo "-b <benchmark>          Run multiple JAX model evaluations to obtain a timing that excludes the compilation time (default: 'False')"
-        echo "-g <use_gpu>            Enable NVIDIA runtime to run with GPUs (default: 'True')"
+        echo "-g <use_gpu>            Enable NVIDIA runtime to run with GPUs (default: 'False')"
         echo "-u <gpu_devices>        Comma separated list of devices to pass to 'CUDA_VISIBLE_DEVICES' (default: '0')"
         echo "-c <db_preset>          Choose database reduced_dbs or full_dbs (default: 'full_dbs')"
         echo "-r <models_to_relax>    'all': all models are relaxed, 'best': only the most confident model, 'none': no models are relaxed (default: 'all')"
         echo "-m <model_selection>    Names of comma separated model names to use in prediction (default: All 5 models)"
         echo "-R <recycling>          Set cycles for recycling (default: '3')"
-        echo "-f <run_feature>        Only run MSA and template search to generate feature file"
-        echo "-G <use_gpu_relax>      Disable GPU relax"
-        
+        echo "-f <run_feature>        Only run MSA and template search to generate feature file (default: 'False')"
+        echo "-G <use_gpu_relax>      Use GPU relax (default: 'False')"
+        echo "-e <random_seed>        Set random seed (default: '-1')"
+        echo "-s <skip_msa>           Skip MSA and template step, generate single sequence feature for ultimately fast prediction (default: 'False')"
+        echo "-P <use_precomputed_msas>   Use precomputed MSAs .sto files (default: 'False')"
         echo "Future Parameters (You cannot use them now):"
-        echo "-s <skip_msa>           Skip MSA and template step, generate single sequence feature for ultimately fast prediction"
         echo "-q <quick_mode>         Quick mode. Use small BFD database, no templates"
-        echo "-e <random_seed>        Set random seed"
-        echo "-P <precomputed_msas>   Use precomputed MSAs"
         echo ""
         exit 1
 }
 
-while getopts ":d:o:p:i:t:u:c:m:R:r:bgvsqfG" i; do
+while getopts ":d:o:p:i:t:u:c:m:R:r:e:bgvsqfGP" i; do
         case "${i}" in
         d)
                 data_dir=$OPTARG
@@ -84,7 +83,13 @@ while getopts ":d:o:p:i:t:u:c:m:R:r:bgvsqfG" i; do
                 run_feature=true
         ;;
         G)
-                use_gpu_relax=false
+                use_gpu_relax=true
+        ;;
+        e)
+                random_seed=$OPTARG
+        ;;
+        P)
+                use_precomputed_msas=true
         ;;
         esac
 done
@@ -95,7 +100,7 @@ if [[ "$data_dir" == "" || "$output_dir" == "" || "$model_preset" == "" || "$fas
 fi
 
 if [[ "$max_template_date" == "" ]] ; then
-    max_template_date="2020-12-01"
+    max_template_date="2020-05-14"
 fi
 
 if [[ "$benchmark" == "" ]] ; then
@@ -103,7 +108,7 @@ if [[ "$benchmark" == "" ]] ; then
 fi
 
 if [[ "$use_gpu" == "" ]] ; then
-    use_gpu=true
+    use_gpu=false
 fi
 
 if [[ "$gpu_devices" == "" ]] ; then
@@ -142,8 +147,16 @@ if [[ "$run_feature" == "" ]] ; then
     run_feature=false
 fi
 
+if [[ "$use_precomputed_msas" == "" ]] ; then
+    use_precomputed_msas=false
+fi
+
 if [[ "$use_gpu_relax" == "" ]] ; then
-    use_gpu_relax=true
+    use_gpu_relax=false
+fi
+
+if [[ "$random_seed" == "" ]] ; then
+    random_seed=-1
 fi
 
 
@@ -166,14 +179,16 @@ if [[ "$use_gpu" == true ]] ; then
     fi
 fi
 
-export TF_FORCE_UNIFIED_MEMORY='1'
-export XLA_PYTHON_CLIENT_MEM_FRACTION='4.0'
+if [[ "$run_feature" == false]] ; then
+    export TF_FORCE_UNIFIED_MEMORY='1'
+    export XLA_PYTHON_CLIENT_MEM_FRACTION='4.0'
+fi
 
 # Path and user config (change me if required)
 parameter_path="$data_dir/params"
 bfd_database_path="$data_dir/bfd/bfd_metaclust_clu_complete_id30_c90_final_seq.sorted_opt"
 small_bfd_database_path="$data_dir/small_bfd/bfd-first_non_consensus_sequences.fasta"
-mgnify_database_path="$data_dir/mgnify/mgy_clusters_2018_12.fa"
+mgnify_database_path="$data_dir/mgnify/mgy_clusters_2022_05.fa"
 template_mmcif_dir="$data_dir/pdb_mmcif/mmcif_files"
 obsolete_pdbs_path="$data_dir/pdb_mmcif/obsolete.dat"
 pdb70_database_path="$data_dir/pdb70/pdb70"
@@ -211,6 +226,12 @@ if [[ "$model_preset" == "multimer" ]] ; then
     pdb70_database_path=""
 fi
 
+if [[ "$skip_msa" == true ]] ; then
+    python $(readlink -f $(dirname $0))/parafold/create_fakemsa.py \
+    --fasta_paths=$fasta_path \
+    --output_dir=$output_dir
+fi
+
 # Run AlphaFold with required parameters
 python $alphafold_script \
 --fasta_paths=$fasta_path \
@@ -241,4 +262,6 @@ python $alphafold_script \
 --use_gpu_relax=$use_gpu_relax \
 --recycling=$recycling \
 --run_feature=$run_feature \
+--random_seed=$random_seed \
+--use_precomputed_msas=$use_precomputed_msas \
 --logtostderr

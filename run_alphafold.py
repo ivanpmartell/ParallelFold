@@ -198,24 +198,20 @@ def predict_structure(
   # Get features.
   t_0 = time.time()
   features_output_path = os.path.join(output_dir, 'features.pkl')
-  
   # If we already have feature.pkl file, skip the MSA and template finding step
   if os.path.exists(features_output_path):
     feature_dict = pickle.load(open(features_output_path, 'rb'))
-  
   else:
+    #Calculate MSAs and write out features as a pickled dictionary.
     feature_dict = data_pipeline.process(
         input_fasta_path=fasta_path,
         msa_output_dir=msa_output_dir)
-
-  # Write out features as a pickled dictionary.
-  features_output_path = os.path.join(output_dir, 'features.pkl')
-  with open(features_output_path, 'wb') as f:
-    pickle.dump(feature_dict, f, protocol=4)
+    with open(features_output_path, 'wb') as f:
+      pickle.dump(feature_dict, f, protocol=4)
 
   timings['features'] = time.time() - t_0
 
-  if run_feature:    # if not run_feature, skip the rest of the function
+  if run_feature:    # if run_feature, skip the rest of the function
     return 0
 
   unrelaxed_pdbs = {}
@@ -454,7 +450,7 @@ def main(argv):
       use_gpu=FLAGS.use_gpu_relax)
 
   random_seed = FLAGS.random_seed
-  if random_seed is None:
+  if random_seed == -1:
     random_seed = random.randrange(sys.maxsize // len(model_runners))
   logging.info('Using random seed %d for the data pipeline', random_seed)
 

@@ -26,14 +26,15 @@ usage() {
         echo "-e <random_seed>        Set random seed (default: '-1')"
         echo "-s <skip_msa>           Skip MSA and template step, generate single sequence feature for ultimately fast prediction (default: 'False')"
         echo "-P <use_precomputed_msas>   Use precomputed MSAs .sto files (default: 'False')"
-        
+        echo "-U <unified_memory>   Unify RAM and GPU memory for bigger molecules that would not fit in GPU memory alone"
+
         echo "Future Parameters (You cannot use them now):"
         echo "-q <quick_mode>         Quick mode. Use small BFD database, no templates"
         echo ""
         exit 1
 }
 
-while getopts ":d:o:p:i:t:u:c:m:R:r:e:bgvsqfGP" i; do
+while getopts ":d:o:p:i:t:u:c:m:R:r:e:bgvsqfGPU" i; do
         case "${i}" in
         d)
                 data_dir=$OPTARG
@@ -91,6 +92,9 @@ while getopts ":d:o:p:i:t:u:c:m:R:r:e:bgvsqfGP" i; do
         ;;
         P)
                 use_precomputed_msas=true
+        ;;
+        U)
+                unified_memory=true
         ;;
         esac
 done
@@ -160,6 +164,10 @@ if [[ "$random_seed" == "" ]] ; then
     random_seed=-1
 fi
 
+if [[ "$unified_memory" == "" ]] ; then
+    unified_memory=false
+fi
+
 
 # This bash script looks for the run_alphafold.py script in its current working directory, if it does not exist then exits
 #current_working_dir=$(pwd)
@@ -180,7 +188,7 @@ if [[ "$use_gpu" == true ]] ; then
     fi
 fi
 
-if [[ "$run_features_only" == false ]] ; then
+if [[ "$unified_memory" == true ]] ; then
     export TF_FORCE_UNIFIED_MEMORY='1'
     export XLA_PYTHON_CLIENT_MEM_FRACTION='4.0'
 fi
@@ -266,3 +274,5 @@ python $alphafold_script \
 --random_seed=$random_seed \
 --use_precomputed_msas=$use_precomputed_msas \
 --logtostderr
+
+#Example: ./run_alphafold.sh -d /mnt/e/af2/af_download_data/ -o /mnt/e/af2/output/ -p monomer_ptm -i /mnt/e/af2/fasta_mmcifs/Cluster_38514/1aha_A.fa -m model_1,model_2,model_3,model_4,model_5 -t 2020-05-14 -c reduced_dbs -s -g -G

@@ -28,7 +28,17 @@ We recommend to install AlphaFold locally, and not using **docker**. An install 
 # clone this repo
 git clone https://github.com/ivanpmartell/ParallelFold.git
 
-# run install script as super user
+# move to the scripts directory
+cd ParallelFold/scripts
+
+# run installation scripts
+chmod +x local_install_nvidia.sh
+sudo ./local_install_nvidia.sh
+echo 'export PATH=$PATH:/usr/local/nvidia/bin:/usr/local/cuda/bin:/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin' >> ~/.bashrc
+
+chmod +x local_install.sh
+sudo ./local_install.sh
+/opt/conda/bin/conda init
 
 # make script executable
 chmod +x run_alphafold.sh

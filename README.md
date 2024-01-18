@@ -35,10 +35,12 @@ cd ParallelFold/scripts
 chmod +x local_install_nvidia.sh
 sudo ./local_install_nvidia.sh
 echo 'export PATH=$PATH:/usr/local/nvidia/bin:/usr/local/cuda/bin:/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin' >> ~/.bashrc
+# restart terminal
 
 chmod +x local_install.sh
 sudo ./local_install.sh
 /opt/conda/bin/conda init
+# restart terminal
 
 # make script executable
 chmod +x run_alphafold.sh

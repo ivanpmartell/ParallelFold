@@ -1,5 +1,6 @@
 #!/bin/bash
 #Must have lua5.3 installed
+set -e
 SCRIPT_DIR=$( cd -- "$( dirname -- "${BASH_SOURCE[0]}" )" &> /dev/null && pwd )
 DOWNLOAD_DIR=$(realpath "$1")
 

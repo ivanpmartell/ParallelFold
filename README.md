@@ -25,18 +25,21 @@ We have these following modifications to the original AlphaFold pipeline:
 We recommend to install AlphaFold locally, and not using **docker**. An install script for ubuntu 20.04 is provided. Make sure to add ENV PATHs to your bashrc.
 
 ```bash
+# install requirements
+sudo apt install aria2 rsync git wget tmux tree -y
 # clone this repo
 git clone https://github.com/ivanpmartell/ParallelFold.git
 
 # move to the scripts directory
 cd ParallelFold/scripts
 
-# run installation scripts
+# run GPU installation script
 chmod +x local_install_nvidia.sh
 sudo ./local_install_nvidia.sh
 echo 'export PATH=$PATH:/usr/local/nvidia/bin:/usr/local/cuda/bin:/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin' >> ~/.bashrc
 # restart terminal
 
+# run alphafold installation script
 chmod +x local_install.sh
 sudo ./local_install.sh
 /opt/conda/bin/conda init

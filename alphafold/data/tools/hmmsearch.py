@@ -31,10 +31,10 @@ class Hmmsearch(object):
   def __init__(self,
                *,
                binary_path: str,
+               run_prediction_only: bool,
                hmmbuild_binary_path: str,
                database_path: str,
-               flags: Optional[Sequence[str]] = None,
-               run_prediction_only: bool):
+               flags: Optional[Sequence[str]] = None):
     """Initializes the Python hmmsearch wrapper.
 
     Args:

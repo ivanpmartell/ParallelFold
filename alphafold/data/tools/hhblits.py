@@ -34,6 +34,7 @@ class HHBlits:
   def __init__(self,
                *,
                binary_path: str,
+               run_prediction_only: bool,
                databases: Sequence[str],
                n_cpu: int = 4,
                n_iter: int = 3,
@@ -45,8 +46,7 @@ class HHBlits:
                all_seqs: bool = False,
                alt: Optional[int] = None,
                p: int = _HHBLITS_DEFAULT_P,
-               z: int = _HHBLITS_DEFAULT_Z,
-               run_prediction_only: bool):
+               z: int = _HHBLITS_DEFAULT_Z):
     """Initializes the Python HHblits wrapper.
 
     Args:

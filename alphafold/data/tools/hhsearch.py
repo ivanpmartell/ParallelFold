@@ -32,9 +32,9 @@ class HHSearch:
   def __init__(self,
                *,
                binary_path: str,
+               run_prediction_only: bool,
                databases: Sequence[str],
-               maxseq: int = 1_000_000,
-               run_prediction_only: bool):
+               maxseq: int = 1_000_000):
     """Initializes the Python HHsearch wrapper.
 
     Args:

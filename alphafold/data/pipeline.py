@@ -118,6 +118,7 @@ class DataPipeline:
 
     def __init__(self,
                  jackhmmer_binary_path: str,
+                 run_prediction_only: bool,
                  hhblits_binary_path: str,
                  uniref90_database_path: str,
                  mgnify_database_path: str,
@@ -129,8 +130,7 @@ class DataPipeline:
                  use_small_bfd: bool,
                  mgnify_max_hits: int = 501,
                  uniref_max_hits: int = 10000,
-                 use_precomputed_msas: bool = False,
-                 run_prediction_only: bool):
+                 use_precomputed_msas: bool = False):
         """Initializes the data pipeline."""
         self._use_small_bfd = use_small_bfd
         self.jackhmmer_uniref90_runner = jackhmmer.Jackhmmer(

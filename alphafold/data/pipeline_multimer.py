@@ -172,11 +172,11 @@ class DataPipeline:
 
   def __init__(self,
                monomer_data_pipeline: pipeline.DataPipeline,
+               run_prediction_only: bool,
                jackhmmer_binary_path: str,
                uniprot_database_path: str,
                max_uniprot_hits: int = 50000,
-               use_precomputed_msas: bool = False,
-               run_prediction_only: bool):
+               use_precomputed_msas: bool = False):
     """Initializes the data pipeline.
 
     Args:

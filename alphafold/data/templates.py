@@ -806,10 +806,10 @@ class TemplateHitFeaturizer(abc.ABC):
       max_template_date: str,
       max_hits: int,
       kalign_binary_path: str,
+      run_prediction_only: bool,
       release_dates_path: Optional[str],
       obsolete_pdbs_path: Optional[str],
-      strict_error_check: bool = False,
-      run_prediction_only: bool):
+      strict_error_check: bool = False):
     """Initializes the Template Search.
 
     Args:

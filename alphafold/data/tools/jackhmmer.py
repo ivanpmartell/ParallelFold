@@ -34,6 +34,7 @@ class Jackhmmer:
   def __init__(self,
                *,
                binary_path: str,
+               run_prediction_only: bool,
                database_path: str,
                n_cpu: int = 8,
                n_iter: int = 1,
@@ -46,8 +47,7 @@ class Jackhmmer:
                incdom_e: Optional[float] = None,
                dom_e: Optional[float] = None,
                num_streamed_chunks: Optional[int] = None,
-               streaming_callback: Optional[Callable[[int], None]] = None,
-               run_prediction_only: bool):
+               streaming_callback: Optional[Callable[[int], None]] = None):
     """Initializes the Python Jackhmmer wrapper.
 
     Args:

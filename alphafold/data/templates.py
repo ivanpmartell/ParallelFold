@@ -808,7 +808,8 @@ class TemplateHitFeaturizer(abc.ABC):
       kalign_binary_path: str,
       release_dates_path: Optional[str],
       obsolete_pdbs_path: Optional[str],
-      strict_error_check: bool = False):
+      strict_error_check: bool = False,
+      run_prediction_only: bool):
     """Initializes the Template Search.
 
     Args:
@@ -833,9 +834,10 @@ class TemplateHitFeaturizer(abc.ABC):
         * Any feature computation errors.
     """
     self._mmcif_dir = mmcif_dir
-    if not glob.glob(os.path.join(self._mmcif_dir, '*.cif')):
-      logging.error('Could not find CIFs in %s', self._mmcif_dir)
-      raise ValueError(f'Could not find CIFs in {self._mmcif_dir}')
+    if not run_prediction_only:
+      if not glob.glob(os.path.join(self._mmcif_dir, '*.cif')):
+        logging.error('Could not find CIFs in %s', self._mmcif_dir)
+        raise ValueError(f'Could not find CIFs in {self._mmcif_dir}')
 
     try:
       self._max_template_date = datetime.datetime.strptime(
@@ -853,7 +855,7 @@ class TemplateHitFeaturizer(abc.ABC):
     else:
       self._release_dates = {}
 
-    if obsolete_pdbs_path:
+    if obsolete_pdbs_path and not run_prediction_only:
       logging.info('Using precomputed obsolete pdbs %s.', obsolete_pdbs_path)
       self._obsolete_pdbs = _parse_obsolete(obsolete_pdbs_path)
     else:

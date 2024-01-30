@@ -45,7 +45,8 @@ class HHBlits:
                all_seqs: bool = False,
                alt: Optional[int] = None,
                p: int = _HHBLITS_DEFAULT_P,
-               z: int = _HHBLITS_DEFAULT_Z):
+               z: int = _HHBLITS_DEFAULT_Z,
+               run_prediction_only: bool):
     """Initializes the Python HHblits wrapper.
 
     Args:
@@ -77,10 +78,11 @@ class HHBlits:
     self.binary_path = binary_path
     self.databases = databases
 
-    for database_path in self.databases:
-      if not glob.glob(database_path + '_*'):
-        logging.error('Could not find HHBlits database %s', database_path)
-        raise ValueError(f'Could not find HHBlits database {database_path}')
+    if not run_prediction_only:
+      for database_path in self.databases:
+        if not glob.glob(database_path + '_*'):
+          logging.error('Could not find HHBlits database %s', database_path)
+          raise ValueError(f'Could not find HHBlits database {database_path}')
 
     self.n_cpu = n_cpu
     self.n_iter = n_iter

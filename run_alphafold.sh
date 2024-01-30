@@ -24,7 +24,8 @@ usage() {
         echo "-f <run_features_only>  Only run MSA and template search to generate feature file (default: 'False')"
         echo "-G <use_gpu_relax>      Use GPU relax (default: 'False')"
         echo "-e <random_seed>        Set random seed (default: '-1')"
-        echo "-s <skip_msa>           Skip MSA and template step, generate single sequence feature for ultimately fast prediction (default: 'False')"
+        echo "-F <fake_msa>           Create fake MSA and template step, generate single sequence feature for fast prediction (default: 'False')"
+        echo "-s <skip_msa>           Skip MSA and template step, using precomputed files from previous use of run_features_only (default: 'False')"
         echo "-P <use_precomputed_msas>   Use precomputed MSAs .sto files (default: 'False')"
         echo "-U <unified_memory>   Unify RAM and GPU memory for bigger molecules that would not fit in GPU memory alone"
 
@@ -71,6 +72,9 @@ while getopts ":d:o:p:i:t:u:c:m:R:r:e:bgvsqfGPU" i; do
         ;;
         v)
                 visualizaion=true
+        ;;
+        F)
+                fake_msa=true
         ;;
         s)
                 skip_msa=true
@@ -134,6 +138,10 @@ fi
 
 if [[ "$visualizaion" == "" ]] ; then
     visualizaion=false
+fi
+
+if [[ "$fake_msa" == "" ]] ; then
+    fake_msa=false
 fi
 
 if [[ "$skip_msa" == "" ]] ; then
@@ -235,7 +243,7 @@ if [[ "$model_preset" == "multimer" ]] ; then
     pdb70_database_path=""
 fi
 
-if [[ "$skip_msa" == true ]] ; then
+if [[ "$fake_msa" == true ]] ; then
     python $(readlink -f $(dirname $0))/parafold/create_fakemsa.py \
     --fasta_paths=$fasta_path \
     --output_dir=$output_dir
@@ -273,6 +281,7 @@ python $alphafold_script \
 --run_feature=$run_features_only \
 --random_seed=$random_seed \
 --use_precomputed_msas=$use_precomputed_msas \
+--run_prediction_only=$skip_msa\
 --logtostderr
 
 #Example: ./run_alphafold.sh -d /mnt/e/af2/af_download_data/ -o /mnt/e/af2/output/ -p monomer_ptm -i /mnt/e/af2/fasta_mmcifs/Cluster_38514/1aha_A.fa -m model_1,model_2,model_3,model_4,model_5 -t 2020-05-14 -c reduced_dbs -s -g -G

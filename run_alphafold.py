@@ -144,6 +144,8 @@ flags.DEFINE_boolean('use_gpu_relax', None, 'Whether to relax on GPU. '
 flags.DEFINE_integer('recycling', 3, 'Set number of recyclings')
 flags.DEFINE_boolean('run_feature', False, 'Calculate MSA and template to generate '
                      'feature')
+flags.DEFINE_boolean('run_prediction_only', False, 'Use precomputed feature files '
+                     'for a prediction only run')
 
 FLAGS = flags.FLAGS
 
@@ -374,25 +376,29 @@ def main(argv):
     template_searcher = hmmsearch.Hmmsearch(
         binary_path=FLAGS.hmmsearch_binary_path,
         hmmbuild_binary_path=FLAGS.hmmbuild_binary_path,
-        database_path=FLAGS.pdb_seqres_database_path)
+        database_path=FLAGS.pdb_seqres_database_path,
+        run_prediction_only=run_prediction_only)
     template_featurizer = templates.HmmsearchHitFeaturizer(
         mmcif_dir=FLAGS.template_mmcif_dir,
         max_template_date=FLAGS.max_template_date,
         max_hits=MAX_TEMPLATE_HITS,
         kalign_binary_path=FLAGS.kalign_binary_path,
         release_dates_path=None,
-        obsolete_pdbs_path=FLAGS.obsolete_pdbs_path)
+        obsolete_pdbs_path=FLAGS.obsolete_pdbs_path,
+        run_prediction_only=run_prediction_only)
   else:
     template_searcher = hhsearch.HHSearch(
         binary_path=FLAGS.hhsearch_binary_path,
-        databases=[FLAGS.pdb70_database_path])
+        databases=[FLAGS.pdb70_database_path],
+        run_prediction_only=run_prediction_only)
     template_featurizer = templates.HhsearchHitFeaturizer(
         mmcif_dir=FLAGS.template_mmcif_dir,
         max_template_date=FLAGS.max_template_date,
         max_hits=MAX_TEMPLATE_HITS,
         kalign_binary_path=FLAGS.kalign_binary_path,
         release_dates_path=None,
-        obsolete_pdbs_path=FLAGS.obsolete_pdbs_path)
+        obsolete_pdbs_path=FLAGS.obsolete_pdbs_path,
+        run_prediction_only=run_prediction_only)
 
   monomer_data_pipeline = pipeline.DataPipeline(
       jackhmmer_binary_path=FLAGS.jackhmmer_binary_path,
@@ -405,7 +411,8 @@ def main(argv):
       template_searcher=template_searcher,
       template_featurizer=template_featurizer,
       use_small_bfd=use_small_bfd,
-      use_precomputed_msas=FLAGS.use_precomputed_msas)
+      use_precomputed_msas=FLAGS.use_precomputed_msas,
+      run_prediction_only=run_prediction_only)
 
   if run_multimer_system:
     num_predictions_per_model = FLAGS.num_multimer_predictions_per_model
@@ -413,7 +420,8 @@ def main(argv):
         monomer_data_pipeline=monomer_data_pipeline,
         jackhmmer_binary_path=FLAGS.jackhmmer_binary_path,
         uniprot_database_path=FLAGS.uniprot_database_path,
-        use_precomputed_msas=FLAGS.use_precomputed_msas)
+        use_precomputed_msas=FLAGS.use_precomputed_msas,
+        run_prediction_only=run_prediction_only)
   else:
     num_predictions_per_model = 1
     data_pipeline = monomer_data_pipeline

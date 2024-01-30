@@ -46,7 +46,8 @@ class Jackhmmer:
                incdom_e: Optional[float] = None,
                dom_e: Optional[float] = None,
                num_streamed_chunks: Optional[int] = None,
-               streaming_callback: Optional[Callable[[int], None]] = None):
+               streaming_callback: Optional[Callable[[int], None]] = None,
+               run_prediction_only: bool):
     """Initializes the Python Jackhmmer wrapper.
 
     Args:
@@ -71,9 +72,10 @@ class Jackhmmer:
     self.database_path = database_path
     self.num_streamed_chunks = num_streamed_chunks
 
-    if not os.path.exists(self.database_path) and num_streamed_chunks is None:
-      logging.error('Could not find Jackhmmer database %s', database_path)
-      raise ValueError(f'Could not find Jackhmmer database {database_path}')
+    if not run_prediction_only:
+      if not os.path.exists(self.database_path) and num_streamed_chunks is None:
+        logging.error('Could not find Jackhmmer database %s', database_path)
+        raise ValueError(f'Could not find Jackhmmer database {database_path}')
 
     self.n_cpu = n_cpu
     self.n_iter = n_iter

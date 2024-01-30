@@ -33,7 +33,8 @@ class Hmmsearch(object):
                binary_path: str,
                hmmbuild_binary_path: str,
                database_path: str,
-               flags: Optional[Sequence[str]] = None):
+               flags: Optional[Sequence[str]] = None,
+               run_prediction_only: bool):
     """Initializes the Python hmmsearch wrapper.
 
     Args:
@@ -60,9 +61,10 @@ class Hmmsearch(object):
                '--incdomE', '100']
     self.flags = flags
 
-    if not os.path.exists(self.database_path):
-      logging.error('Could not find hmmsearch database %s', database_path)
-      raise ValueError(f'Could not find hmmsearch database {database_path}')
+    if not run_prediction_only:
+      if not os.path.exists(self.database_path):
+        logging.error('Could not find hmmsearch database %s', database_path)
+        raise ValueError(f'Could not find hmmsearch database {database_path}')
 
   @property
   def output_format(self) -> str:

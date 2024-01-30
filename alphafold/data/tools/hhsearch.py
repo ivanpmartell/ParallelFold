@@ -33,7 +33,8 @@ class HHSearch:
                *,
                binary_path: str,
                databases: Sequence[str],
-               maxseq: int = 1_000_000):
+               maxseq: int = 1_000_000,
+               run_prediction_only: bool):
     """Initializes the Python HHsearch wrapper.
 
     Args:
@@ -51,10 +52,11 @@ class HHSearch:
     self.databases = databases
     self.maxseq = maxseq
 
-    for database_path in self.databases:
-      if not glob.glob(database_path + '_*'):
-        logging.error('Could not find HHsearch database %s', database_path)
-        raise ValueError(f'Could not find HHsearch database {database_path}')
+    if not run_prediction_only:
+      for database_path in self.databases:
+        if not glob.glob(database_path + '_*'):
+          logging.error('Could not find HHsearch database %s', database_path)
+          raise ValueError(f'Could not find HHsearch database {database_path}')
 
   @property
   def output_format(self) -> str:
